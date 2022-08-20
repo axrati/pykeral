@@ -1,6 +1,4 @@
-import pandas as pd
 from lib.utils.tools import all_exist_in
-
 
 # {
 #     "node_group_name": "person_group_1"
@@ -30,7 +28,6 @@ from lib.utils.tools import all_exist_in
 # },
 
 def otm_row_check(arr, mandatory_otm_sub_keys, available_otm_sub_keys):
-    print("Successful Hit Level")
     for i in arr:
         c_keys = list(i.keys())
         mandatory_check = all_exist_in(mandatory_otm_sub_keys, c_keys)
@@ -76,15 +73,16 @@ def node_df_config_linter(config):
             available_otm_sub_keys = ['column_name', 'sub_columns']
             sub_check = all_exist_in(['sub_columns'], root_item_keys)
             if sub_check:
-                print("Successful hit_level")
                 otm_row_check(item['sub_columns'], mandatory_otm_sub_keys, available_otm_sub_keys)
-            print("Successful lint")
 
     derived_check = all_exist_in(['derived'], supplied_keys)
-    print(derived_check)
-
-
-
-
-def node_df_config_compiler(config):
-    node_df_config_linter(config)
+    if derived_check:
+        for derv in config['derived']:
+            root_item_keys = list(derv.keys())
+            mandatory_root_keys = ['attribute_name','operation','columns']
+            mandatory_root_key_check = all_exist_in(mandatory_root_keys, supplied_keys)
+            if mandatory_root_key_check == False:
+                raise Exception("A key was provided to the derived_check input that shouldnt be there. Available keys are:\n{}".format(str(mandatory_root_key_check)))
+            columns_dict_check = type(derv['columns'])==list
+            if columns_dict_check == False:
+                raise Exception("The columns argument was not provided a list, please supply an array of column strings or indexes:\n")

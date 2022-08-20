@@ -5,6 +5,7 @@ import pandas as pd
 
 from lib.session_handlers.event_service import EventLogger, Event
 from lib.object_factory.node_factory import Node
+from lib.dataframe_factory.dfx import dfxc
 
 # Start session
 global log 
@@ -26,6 +27,42 @@ df = pd.DataFrame([
 ], columns=['id','name','age', 'gender','has_kids'])
 
 #2) Create Nodes / Rels
+dfx = dfxc(df)
+
+config = {
+    "nodes":[],
+    "relationships":[]
+}
+
+
+NODE_EXAMPLE =  {
+    "node_group_name": "data_group_one",
+    "label":"Person",
+    "row_level_node_keys":['name','age','gender'],
+    "one_to_many":[],
+    "derived":[]
+    # "one_to_many":[
+    #                    { 
+    #                         "attribute_name":"employment",
+    #                         "column_name":"industry", 
+    #                         "sub_columns":[
+    #                             { "column_name":"occupation_role_name" }
+    #                         ]
+    #                     }
+    #     ],
+    # "derived":[
+    #     {"attribute_name":"number_of_players", "operation":"COUNTD", "columns":['user_id']}
+    # ]
+}
+
+config['nodes'].append(NODE_EXAMPLE)
+
+
+nodes, relationships = dfx.fish(config)
+
+print(dfx.nodes)
+
+dfx.help()
 
 
 

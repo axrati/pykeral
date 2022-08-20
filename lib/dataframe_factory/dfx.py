@@ -2,8 +2,9 @@ import pandas as pd
 from datetime import datetime
 from lib.object_factory.node_factory import Node
 from lib.object_factory.relationship_factory import Relationship
+from lib.dataframe_factory.engine import node_df_execution
 
-def fish(df):
+def dfxc(df):
     return dfx(df)
     
 
@@ -34,24 +35,34 @@ class dfx:
         ## Graph data
         self.nodes = []
         self.relationships = []
-        self.models = []
-        
+        # self.models = []
 
 
-        def help(self):
+    def fish(self,config):
+        nodes,relationships = node_df_execution(self.data, config)
+        self.nodes = nodes
+        self.relationships = relationships
+        return nodes, relationships
+
+
+
+    def help(self):
             print("""
 Accessible properities:
+
   self.data === Original pandas dataframe
   self.column_names === Array of dataframe's columns
   self.column_types === Array of dataframe's datatypes
   self.datatype_map === Dictionary of column name to datatype mapping
   self.rows === Array of pandas Series objects
   self.idx === Array of row level indexes
+  self.nodes === Array of Nodes class objects
+  self.relationships === Array Relationship class objects
 
 
--- FUNCTION: .generate() --
+-- FUNCTION: .fish() --
 
-Expects schema of df to node/rel maps. Requires at least row_level_keys.
+Expects a schema of df to node/rel maps. Requires at least row_level_keys.
 
 ``````
 one_to_many stores items as nested objects/arrays & works in the following way:
@@ -66,10 +77,21 @@ derived calculates data to store as an attribute & works in the following way:
     (attribute_name)   (operation)     (columns)                
       average_time        AVG       ['play_minutes']                 
       total_pay           SUM       ['paycheck_amt', 'gift_amt']     
-      last_visit          MAX       ['patient_visit_date']
+      last_visit          MAX       ['patient_visit_date', 'employee_visit_date']
+      unique_teams       COUNTD     ['sport_city','sport_name']
                     
-    AVG, SUM, MAX, MIN will only work on numbers and dates
-    COUNT, COUNTD will work on any datatype
+    AVG, SUM, MAX, MIN will only work on numbers and dates. They calculate
+    additively. MAX above will get the max date from the union of both columns.
+
+    AVG/MIN/MAX to not have comparitive support yet. 
+    ie: Average across the unique values of both columns above for total_pay
+
+    COUNT, COUNTD will work on any datatype. It reads across, so in the example 
+    above, team names shared by differentcities would be considered unique. 
+    COUNT will find the number of times the values are != None
+
+    Planned configuration for custom calculations
+
 ``````
 
 Example Payload
@@ -102,7 +124,7 @@ Example Payload
                 },
                 ...
             ]
-    "rels":[
+    "relationships":[
                 {
                     "rel_group_name":"rel_type_1",
                     "name":"HAS_INTEREST_IN",
