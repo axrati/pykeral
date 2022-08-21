@@ -44,6 +44,12 @@ class dfx:
         self.relationships = relationships
         return nodes, relationships
 
+    def template(self):
+        data = {}
+        data['nodes']= [ { "node_group_name": "a1", "label":"Person", "row_level_node_keys":['id','name','age'], "one_to_many":[   {    "attribute_name":"work_data",   "column_name":"industry",    "sub_columns":[       { "column_name":"occupation_role_name" }    ]    }  ], "derived":[  {"attribute_name":"number_of_players", "operation":"COUNTD", "columns":['user_id']}  ]  }  ],
+        data['relationships'] = [{"rel_group_name":"rel_type_1","name":"HAS_INTEREST_IN","from":"a1","to":"a2","derived":[    {"attribute_name":"money_spent", "operation":"SUM", "columns":['transaction_amt']}] } ]
+        return data
+
 
 
     def help(self):
@@ -58,6 +64,12 @@ Accessible properities:
   self.idx === Array of row level indexes
   self.nodes === Array of Nodes class objects
   self.relationships === Array Relationship class objects
+
+
+-- FUNCTION: .template() --
+
+Returns a sample template to provide. Can be simply changed/modified and applied to .fish()
+
 
 
 -- FUNCTION: .fish() --
