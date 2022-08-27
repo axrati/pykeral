@@ -18,6 +18,7 @@ del kickoff
 #1) Connect to data
 df = pd.DataFrame([
     {"id":1234, "name":"alex", "age":142, "gender":"male", "has_kids":True},
+    {"id":1234, "name":"alex", "age":142, "gender":"female", "has_kids":True},
     {"id":23453, "name":"joe", "age":122, "gender":"male", "has_kids":False},
     {"id":234523, "name":"ham", "age":12, "gender":"female", "has_kids":True},
     {"id":1234523434, "name":"waw", "age":14, "gender":"female", "has_kids":False},
@@ -38,21 +39,21 @@ config = {
 NODE_EXAMPLE =  {
     "node_group_name": "data_group_one",
     "label":"Person",
-    "row_level_node_keys":['name','age','gender'],
-    "one_to_many":[],
-    "derived":[]
-    # "one_to_many":[
-    #                    { 
-    #                         "attribute_name":"employment",
-    #                         "column_name":"industry", 
-    #                         "sub_columns":[
-    #                             { "column_name":"occupation_role_name" }
-    #                         ]
-    #                     }
-    #     ],
-    # "derived":[
-    #     {"attribute_name":"number_of_players", "operation":"COUNTD", "columns":['user_id']}
-    # ]
+    "row_level_node_keys":['name','age'],
+    # "one_to_many":[],
+    # "derived":[]
+    "one_to_many":[
+                       { 
+                            "attribute_name":"employment",
+                            "column_name":"gender", 
+                            "sub_columns":[
+                                { "column_name":"has_kids" }
+                            ]
+                        }
+        ],
+    "derived":[
+        {"attribute_name":"number_of_players", "operation":"COUNTD", "columns":['gender']}
+    ]
 }
 
 config['nodes'].append(NODE_EXAMPLE)
@@ -61,9 +62,9 @@ config['nodes'].append(NODE_EXAMPLE)
 nodes, relationships = dfx.fish(config)
 
 print(dfx.nodes)
-
-dfx.help()
-
+print(nodes[0].data)
+print(nodes[1].data)
+# dfx.help()
 
 
 #3) Publish to Neo4j or API

@@ -45,9 +45,10 @@ class dfx:
         return nodes, relationships
 
     def template(self):
-        data = {}
-        data['nodes']= [ { "node_group_name": "a1", "label":"Person", "row_level_node_keys":['id','name','age'], "one_to_many":[   {    "attribute_name":"work_data",   "column_name":"industry",    "sub_columns":[       { "column_name":"occupation_role_name" }    ]    }  ], "derived":[  {"attribute_name":"number_of_players", "operation":"COUNTD", "columns":['user_id']}  ]  }  ],
-        data['relationships'] = [{"rel_group_name":"rel_type_1","name":"HAS_INTEREST_IN","from":"a1","to":"a2","derived":[    {"attribute_name":"money_spent", "operation":"SUM", "columns":['transaction_amt']}] } ]
+        data = {
+        "nodes": [ { "node_group_name": "a1", "label":"Person", "row_level_node_keys":['id','name','age'], "one_to_many":[   {    "attribute_name":"work_data",   "column_name":"industry",    "sub_columns":[       { "column_name":"occupation_role_name" }    ]    }  ], "derived":[  {"attribute_name":"number_of_players", "operation":"COUNTD", "columns":['user_id']}  ]  }  ],
+        "relationships": [{"rel_group_name":"rel_type_1","name":"HAS_INTEREST_IN","from":"a1","to":"a2","derived":[    {"attribute_name":"money_spent", "operation":"SUM", "columns":['transaction_amt']}] } ]
+        }
         return data
 
 
@@ -91,6 +92,7 @@ derived calculates data to store as an attribute & works in the following way:
       total_pay           SUM       ['paycheck_amt', 'gift_amt']     
       last_visit          MAX       ['patient_visit_date', 'employee_visit_date']
       unique_teams       COUNTD     ['sport_city','sport_name']
+      num_of_visits       COUNT     ['person_id']
                     
     AVG, SUM, MAX, MIN will only work on numbers and dates. They calculate
     additively. MAX above will get the max date from the union of both columns.
