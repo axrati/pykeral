@@ -91,6 +91,7 @@ derived calculates data to store as an attribute & works in the following way:
       average_time        AVG       ['play_minutes']                 
       total_pay           SUM       ['paycheck_amt', 'gift_amt']     
       last_visit          MAX       ['patient_visit_date', 'employee_visit_date']
+      lowest_score        MIN       ['grade']
       unique_teams       COUNTD     ['sport_city','sport_name']
       num_of_visits       COUNT     ['person_id']
                     

@@ -59,11 +59,47 @@ NODE_EXAMPLE =  {
 config['nodes'].append(NODE_EXAMPLE)
 
 
+
+
+
+
+
+
+RELATIONSHIP_EXAMPLE =  {
+    "node_group_name": "data_group_one",
+    "label":"Person",
+    "row_level_node_keys":['name','age'],
+    # "one_to_many":[],
+    # "derived":[]
+    "one_to_many":[
+                       { 
+                            "attribute_name":"employment",
+                            "column_name":"gender", 
+                            "sub_columns":[
+                                { "column_name":"has_kids" }
+                            ]
+                        }
+        ],
+    "derived":[
+        {"attribute_name":"number_of_players", "operation":"COUNTD", "columns":['gender']}
+    ]
+}
+
+config['relationships'].append(NODE_EXAMPLE)
+
+
+
+
+
+
+
+
 nodes, relationships = dfx.fish(config)
 
 print(dfx.nodes)
 print(nodes[0].data)
 print(nodes[1].data)
+print(nodes[0].self_name)
 # dfx.help()
 
 

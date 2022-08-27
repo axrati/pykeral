@@ -1,60 +1,36 @@
 import pandas as pd
 from lib.utils.tools import all_exist_in
 from lib.dataframe_factory.node_linter import node_df_config_linter
-from lib.dataframe_factory.df_utils import row_to_dict
+from lib.dataframe_factory.df_utils import row_to_dict, get_node
 from lib.object_factory.node_factory import Node
 from lib.dataframe_factory.derived import derived_handler
-
+from lib.dataframe_factory.otm import otm_trav, otm_levels, otm_query
 
 def node_df_execution(dataframe, schema):
 
     nodes = []
     relationships = []
 
+
+
+
     # Lint
     if not all_exist_in(['nodes','relationships'], list(schema.keys())):
         raise Exception("You must provide a dict with the keys of 'nodes' and 'relationships', which should have type array. They can be set to empty arrays []")
 
 
-    def otm_trav(level,place,unq_cols):
-        keys = list(level.keys())
-        if all_exist_in(['sub_columns'], keys):
-            cols = []
-            for j in level['sub_columns']:
-                cols.append(j['column_name'])
-                unq_cols.append(j['column_name'])
-            place.append({"first":level['column_name'], 'then':cols})
-            for k in level['sub_columns']:
-                otm_trav(k, place, unq_cols)
-            
-
-    def otm_levels(level,place):
-        keys = list(level.keys())
-        if all_exist_in(['sub_columns'], keys):
-            for j in level['sub_columns']:
-                place.append(level['column_name'])
-            for k in level['sub_columns']:
-                otm_levels(k, place)
-
-    def otm_query(node):
-        where = ''
-        for key in list(node.keys()):
-            if type(node[key])==str:
-                where += "{}=='{}' & ".format(key,node[key])
-            else:
-                where += "{}=={} & ".format(key,node[key])
-        where_q = where[0:len(where)-2]
-        return where_q
 
 
+    # Node
     for node in schema['nodes']:
         #node_df_config_linter(node)
         label = node['label']
         node_group_name=node['node_group_name']
-
+    
         pd_cols = node['row_level_node_keys']
         unique_combinations = dataframe.groupby(pd_cols).size().reset_index().rename(columns={0:'count'})
         node_dicts = row_to_dict(unique_combinations,pd_cols)
+
 
 
         for node_row in node_dicts:
@@ -102,7 +78,27 @@ def node_df_execution(dataframe, schema):
             node_row['derived']=processed_derv
 
         for indiv_node in node_dicts:
-            nodes.append(Node(contents=indiv_node, label=label))
+            nodes.append(Node(self_name=node_group_name, contents=indiv_node, label=label, keys=pd_cols))
+
+
+
+
+
+
+# {
+#     "rel_group_name":"rel_type_1","name":"HAS_INTEREST_IN","from":"a1","to":"a2",
+#     "derived":[    
+#             {"attribute_name":"money_spent", "operation":"SUM", "columns":['transaction_amt'] }
+#             ] 
+# } 
+
+    # Relationship
+    for relationship in schema['relationships']:
+        from_group = relationship['from']
+        to_group = relationship['to']
+        rel_group_name = relationship['rel_group_name']
+        from_nodes = get_node(from_group,nodes)
+        to_nodes = get_node(to_group)
 
     return nodes, relationships
     

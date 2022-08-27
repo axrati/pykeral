@@ -3,11 +3,13 @@ from lib.utils.tools import new_vs_update
 
 class Node:
     
-    def __init__(self, contents={}, label="Unknown" ):
+    def __init__(self, self_name="", contents={}, label="Unknown", keys=[] ):
         if type(contents)==dict:
             self.id = str(uuid.uuid4())
             self.label = label
             self.data = {**contents}
+            self.self_name = self_name
+            self.keys=keys
         else:
             raise Exception("Contents of Node need to be type dict")
             

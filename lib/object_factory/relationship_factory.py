@@ -7,6 +7,7 @@ class Relationship:
             self.id = str(uuid.uuid4())
             self.label = label
             self.data = {**schema}
+            self.from_to_nodes = from_to_nodes
         else:
             raise Exception("Schema of Relationships need to be type dict")
             
@@ -26,8 +27,8 @@ Accessible properities:
           foo = Relationship(schema={ }, from_to_nodes={ } label="HAS_INTEREST_IN")
           relationships = foo.gen_many(
                   [
-                     {"from":"id#123", "to":"id#898", "schema":{"key":"value1"} },
-                     {"from":"id#123", "to":"id#898", "schema":{"key":"value2"} },
+                     {"from":"id#123", "to":"id#898", "schema":{"key":"value1"},
+                     {"from":"id#123", "to":"id#898", "schema":{"key":"value2" },
                   ]
               )
 
