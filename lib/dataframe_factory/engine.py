@@ -1,8 +1,9 @@
 import pandas as pd
 from lib.utils.tools import all_exist_in
 from lib.dataframe_factory.node_linter import node_df_config_linter
-from lib.dataframe_factory.df_utils import row_to_dict, get_node
+from lib.dataframe_factory.df_utils import row_to_dict, get_node, rel_query_gen
 from lib.object_factory.node_factory import Node
+from lib.object_factory.relationship_factory import Relationship
 from lib.dataframe_factory.derived import derived_handler
 from lib.dataframe_factory.otm import otm_trav, otm_levels, otm_query
 
@@ -72,7 +73,6 @@ def node_df_execution(dataframe, schema):
             processed_derv = []
             ## Then handle derive
             for derv in node['derived']:
-                # Query for condition based on nodes
                 derv_final = derived_handler(derv,node_sub_data)
                 processed_derv.append(derv_final)
             node_row['derived']=processed_derv
@@ -86,7 +86,7 @@ def node_df_execution(dataframe, schema):
 
 
 # {
-#     "rel_group_name":"rel_type_1","name":"HAS_INTEREST_IN","from":"a1","to":"a2",
+#     "rel_group_name":"rel_type_1","name":"HAS_INTEREST_IN","from":"a1","to":"a2", "label":"human_interaction"
 #     "derived":[    
 #             {"attribute_name":"money_spent", "operation":"SUM", "columns":['transaction_amt'] }
 #             ] 
@@ -94,11 +94,46 @@ def node_df_execution(dataframe, schema):
 
     # Relationship
     for relationship in schema['relationships']:
+        relationship_label = relationship['label']
         from_group = relationship['from']
         to_group = relationship['to']
         rel_group_name = relationship['rel_group_name']
         from_nodes = get_node(from_group,nodes)
-        to_nodes = get_node(to_group)
+        to_nodes = get_node(to_group, nodes)
+        for frm in from_nodes:
+            frm_keys = frm.keys
+            frm_data = frm.data
+            frm_id = frm.id
+            for tom in to_nodes:
+                tom_keys = tom.keys
+                tom_data = tom.data
+                tom_id = tom.id
+                sub_query = rel_query_gen(frm_keys, frm_data, tom_keys, tom_data)
+                potential_rel = dataframe.query(sub_query)
 
+                if len(potential_rel)>0:
+                    all_rel_columns = list(potential_rel.columns)
+                    schema_data = row_to_dict(potential_rel,all_rel_columns)
+                    relationship_frame = {}
+                    relationship_frame['name']=relationship['name']
+                    relationship_frame['rel_group_name']=rel_group_name
+                    from_to_nodes={"from":frm_id, "to":tom_id}
+                    # Get Derived
+                    relationship_derived = []
+                    for derv in relationship['derived']:
+                        derv_final = derived_handler(derv,potential_rel)
+                        relationship_derived.append(derv_final)
+                    relationship_frame['derived']=relationship_derived
+                    relationship_frame['schema']=schema_data
+                    final_rel = Relationship(schema=relationship_frame, from_to_nodes=from_to_nodes, label=relationship_label)
+                    relationships.append(final_rel)
+                    # Manage Node Data
+                    rel_id = final_rel.id
+                    node_rel_data = {"from":frm_id, "to":tom_id, "relationship_id":rel_id}
+                    frm.add_rel("from",node_rel_data)
+                    tom.add_rel("to",node_rel_data)
+
+
+                    
     return nodes, relationships
     

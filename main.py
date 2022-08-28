@@ -37,7 +37,7 @@ config = {
 
 
 NODE_EXAMPLE =  {
-    "node_group_name": "data_group_one",
+    "node_group_name": "a1",
     "label":"Person",
     "row_level_node_keys":['name','age'],
     # "one_to_many":[],
@@ -55,6 +55,31 @@ NODE_EXAMPLE =  {
         {"attribute_name":"number_of_players", "operation":"COUNTD", "columns":['gender']}
     ]
 }
+
+
+config['nodes'].append(NODE_EXAMPLE)
+
+NODE_EXAMPLE =  {
+    "node_group_name": "a2",
+    "label":"Person",
+    "row_level_node_keys":['id','has_kids'],
+    # "one_to_many":[],
+    # "derived":[]
+    "one_to_many":[
+                       { 
+                            "attribute_name":"employment",
+                            "column_name":"gender", 
+                            "sub_columns":[
+                                { "column_name":"has_kids" }
+                            ]
+                        }
+        ],
+    "derived":[
+        {"attribute_name":"number_of_players", "operation":"COUNTD", "columns":['gender']}
+    ]
+}
+
+
 
 config['nodes'].append(NODE_EXAMPLE)
 
@@ -65,27 +90,9 @@ config['nodes'].append(NODE_EXAMPLE)
 
 
 
-RELATIONSHIP_EXAMPLE =  {
-    "node_group_name": "data_group_one",
-    "label":"Person",
-    "row_level_node_keys":['name','age'],
-    # "one_to_many":[],
-    # "derived":[]
-    "one_to_many":[
-                       { 
-                            "attribute_name":"employment",
-                            "column_name":"gender", 
-                            "sub_columns":[
-                                { "column_name":"has_kids" }
-                            ]
-                        }
-        ],
-    "derived":[
-        {"attribute_name":"number_of_players", "operation":"COUNTD", "columns":['gender']}
-    ]
-}
+RELATIONSHIP_EXAMPLE =  {"rel_group_name":"rel_type_1","label":"ax_cust_label","name":"HAS_INTEREST_IN","from":"a1","to":"a2","derived":[    {"attribute_name":"money_spent", "operation":"SUM", "columns":['id']}] }
 
-config['relationships'].append(NODE_EXAMPLE)
+config['relationships'].append(RELATIONSHIP_EXAMPLE)
 
 
 
@@ -98,8 +105,8 @@ nodes, relationships = dfx.fish(config)
 
 print(dfx.nodes)
 print(nodes[0].data)
-print(nodes[1].data)
-print(nodes[0].self_name)
+
+print(relationships[0].from_to_nodes)
 # dfx.help()
 
 

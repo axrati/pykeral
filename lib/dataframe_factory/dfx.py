@@ -47,7 +47,7 @@ class dfx:
     def template(self):
         data = {
         "nodes": [ { "node_group_name": "a1", "label":"Person", "row_level_node_keys":['id','name','age'], "one_to_many":[   {    "attribute_name":"work_data",   "column_name":"industry",    "sub_columns":[       { "column_name":"occupation_role_name" }    ]    }  ], "derived":[  {"attribute_name":"number_of_players", "operation":"COUNTD", "columns":['user_id']}  ]  }  ],
-        "relationships": [{"rel_group_name":"rel_type_1","name":"HAS_INTEREST_IN","from":"a1","to":"a2","derived":[    {"attribute_name":"money_spent", "operation":"SUM", "columns":['transaction_amt']}] } ]
+        "relationships": [{"rel_group_name":"rel_type_1","name":"HAS_INTEREST_IN", "label":"human_interaction", "from":"a1","to":"a2","derived":[    {"attribute_name":"money_spent", "operation":"SUM", "columns":['age']}] } ]
         }
         return data
 

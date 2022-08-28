@@ -10,8 +10,16 @@ class Node:
             self.data = {**contents}
             self.self_name = self_name
             self.keys=keys
+            self.rels={"from":[], "to":[]}
         else:
             raise Exception("Contents of Node need to be type dict")
+
+    def add_rel(self,from_to, data):
+        # Preferred format is {"from":id, "to":id, "relationship_id":id}
+        if from_to == "from":
+            self.rels['from'].append(data)
+        elif from_to == "to":
+            self.rels['to'].append(data)
             
     def gen_many(self,array_of_self):
         factory = []

@@ -21,6 +21,7 @@ Accessible properities:
   self.id === Auto-generated id
   self.data === Dictionary of relationship data
   self.label === Should really be set
+  self.from_to_nodes === From/To Node IDs
 
   self.gen_many() === For duplicating of labeled node
       Example:
