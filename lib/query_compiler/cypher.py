@@ -38,10 +38,11 @@ def cypher_compiler(dfx):
         to_node_id = node_access['to']
         label = relationship.label
         rel_attrs = list(relationship.data.keys())
+        rel_id = relationship.id
 
         attr_string = ""
         for key in rel_attrs:
-            if key in ["schema","rel_group_name", "name"]:
+            if key in ["schema","rel_group_name", "name", "id"]:
                 continue
             elif key == "otm":
                 for otm in relationship.data[key]:
@@ -57,8 +58,9 @@ def cypher_compiler(dfx):
             else:
                 attr_string+=q_dtype(key,relationship.data)
 
-        samp = {"label":label}
+        samp = {"label":label, "id":rel_id}
         attr_string+= q_dtype("label",samp)
+        attr_string+= q_dtype("id",samp)
 
         attr_string = attr_string[0:len(attr_string)-2]
 

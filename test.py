@@ -15,4 +15,4 @@ df = pd.DataFrame([
 
 #2) Create Nodes / Rels
 dfx = dfxc(df)
-dfx.help()
+
