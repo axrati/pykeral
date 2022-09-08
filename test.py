@@ -1,18 +1,50 @@
 from pykeral.main import dfxc
 import pandas as pd
 
+#1) Read data
+df = pd.read_csv("sample_vacc_data.csv")
 
-df = pd.DataFrame([
-    {"id":1234, "name":"alex", "age":142, "gender":"male", "has_kids":True},
-    {"id":1234, "name":"alex", "age":142, "gender":"female", "has_kids":True},
-    {"id":23453, "name":"joe", "age":122, "gender":"male", "has_kids":False},
-    {"id":234523, "name":"ham", "age":12, "gender":"female", "has_kids":True},
-    {"id":1234523434, "name":"waw", "age":14, "gender":"female", "has_kids":False},
-    {"id":12345234, "name":"evv", "age":16, "gender":"male", "has_kids":True},
-    {"id":1453453234, "name":"tee", "age":50, "gender":"male", "has_kids":False},
-
-], columns=['id','name','age', 'gender','has_kids'])
-
-#2) Create Nodes / Rels
+#2) Create dfx
 dfx = dfxc(df)
 
+#3) Generate Schema
+config = {
+    'nodes': 
+          [
+              {'node_group_name': 'a1', 'label': 'Place', 'row_level_node_keys': ['State'], 
+               'one_to_many': [], 
+               'derived': [
+                   {'attribute_name': 'employees_vaccinated', 'operation': 'SUM', 'columns': ['Emp_Number_Vaccinated']},
+                   {'attribute_name': 'employees_working', 'operation': 'SUM', 'columns': ['Emp_Number_Working']}
+                   ]
+               },
+              {'node_group_name': 'a2', 'label': 'Place', 'row_level_node_keys': ['County'], 
+               'one_to_many': [], 
+               'derived': [
+                   {'attribute_name': 'employees_vaccinated', 'operation': 'SUM', 'columns': ['Emp_Number_Vaccinated']},
+                   {'attribute_name': 'employees_working', 'operation': 'SUM', 'columns': ['Emp_Number_Working']}
+                   ]
+               }
+          ], 
+     'relationships': 
+              [
+                  {'rel_group_name': 'rel_type_1',  'name': 'HAS_SUBREGION',  'row_attributes': ['Mask Required'], 
+                  'label': 'geographic', 'from': 'a1', 'to': 'a2', 
+                   'derived': [
+                       {'attribute_name': 'hospital_count', 'operation': 'SUM', 'columns': ['Number of Hospitals']}
+                       ]
+                   }
+                      ]
+      }
+
+#4) Fish for nodes/rels
+dfx.fish(config)
+
+#5) Generate queries
+dfx.query("cypher")
+
+#6) Wrangle into DB (nodes first)
+print(len(dfx.queries['nodes']))
+print(len(dfx.queries['relationships']))
+print("Have fun, use dfx.help()")
+# dfx.help()

@@ -1,9 +1,10 @@
 import pandas as pd
-from datetime import datetime
 from lib.object_factory.node_factory import Node
 from lib.object_factory.relationship_factory import Relationship
 from lib.dataframe_factory.engine import node_df_execution
 from lib.query_compiler.cypher import cypher_compiler
+
+
 
 def dfxc(df):
     return dfx(df)
@@ -36,7 +37,7 @@ class dfx:
         ## Graph data
         self.nodes = []
         self.relationships = []
-        # self.models = []
+        self.queries = {"nodes":[], "relationships":[]}
 
 
     def fish(self,config):
@@ -46,10 +47,15 @@ class dfx:
         return nodes, relationships
 
 
-    def query_gen(self,qtype):
+    def query(self,qtype):
+        queries = {}
         if qtype=="cypher":
             nq, rq = cypher_compiler(self)
+            queries['nodes']=nq
+            queries['relationships']=rq
+            self.queries = queries
             return nq, rq
+        
 
     def template(self):
         data = {
@@ -126,9 +132,6 @@ derived calculates data to store as an attribute & works in the following way:
 ``````
 
 Example Payload:
-
-## ~~ 1) Simple, compact
-
 
 {
 
