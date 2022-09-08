@@ -100,6 +100,8 @@ def node_df_execution(dataframe, schema):
         rel_group_name = relationship['rel_group_name']
         from_nodes = get_node(from_group,nodes)
         to_nodes = get_node(to_group, nodes)
+        row_attrs = relationship['row_attributes']
+
         for frm in from_nodes:
             frm_keys = frm.keys
             frm_data = frm.data
@@ -112,9 +114,16 @@ def node_df_execution(dataframe, schema):
                 potential_rel = dataframe.query(sub_query)
 
                 if len(potential_rel)>0:
-                    all_rel_columns = list(potential_rel.columns)
-                    schema_data = row_to_dict(potential_rel,all_rel_columns)
                     relationship_frame = {}
+                    all_rel_columns = list(potential_rel.columns)
+                    if len(row_attrs)>0:
+                        for attr in row_attrs:
+                            attrs_df_vals = list(potential_rel[attr].unique())
+                            if len(attrs_df_vals)==1:
+                                relationship_frame[attr]=attrs_df_vals[0]
+                            else:
+                                relationship_frame[attr]=attrs_df_vals
+                    schema_data = row_to_dict(potential_rel,all_rel_columns)
                     relationship_frame['name']=relationship['name']
                     relationship_frame['rel_group_name']=rel_group_name
                     from_to_nodes={"from":frm_id, "to":tom_id}

@@ -1,11 +1,15 @@
 import json
 from datetime import datetime
-from xmlrpc.client import Boolean
 import pandas as pd
 
 from lib.session_handlers.event_service import EventLogger, Event
 from lib.object_factory.node_factory import Node
 from lib.dataframe_factory.dfx import dfxc
+
+
+
+
+
 
 # Start session
 global log 
@@ -15,7 +19,7 @@ kickoff = Event("Operational","Starting process", log)
 kickoff.publish()
 del kickoff
 
-#1) Connect to data
+# 1) Connect to data
 df = pd.DataFrame([
     {"id":1234, "name":"alex", "age":142, "gender":"male", "has_kids":True},
     {"id":1234, "name":"alex", "age":142, "gender":"female", "has_kids":True},
@@ -90,7 +94,7 @@ config['nodes'].append(NODE_EXAMPLE)
 
 
 
-RELATIONSHIP_EXAMPLE =  {"rel_group_name":"rel_type_1","label":"ax_cust_label","name":"HAS_INTEREST_IN","from":"a1","to":"a2","derived":[    {"attribute_name":"money_spent", "operation":"SUM", "columns":['id']}] }
+RELATIONSHIP_EXAMPLE =  {"rel_group_name":"rel_type_1","label":"ax_cust_label", "row_attributes":["color"], "name":"HAS_INTEREST_IN","from":"a1","to":"a2","derived":[    {"attribute_name":"money_spent", "operation":"SUM", "columns":['id']}] }
 
 config['relationships'].append(RELATIONSHIP_EXAMPLE)
 
