@@ -3,6 +3,7 @@ from datetime import datetime
 from lib.object_factory.node_factory import Node
 from lib.object_factory.relationship_factory import Relationship
 from lib.dataframe_factory.engine import node_df_execution
+from lib.query_compiler.cypher import cypher_compiler
 
 def dfxc(df):
     return dfx(df)
@@ -44,6 +45,12 @@ class dfx:
         self.relationships = relationships
         return nodes, relationships
 
+
+    def query_gen(self,qtype):
+        if qtype=="cypher":
+            nq, rq = cypher_compiler(self)
+            return nq, rq
+
     def template(self):
         data = {
         "nodes": [ { "node_group_name": "a1", "label":"Person", "row_level_node_keys":['id','name','age'], "one_to_many":[   {    "attribute_name":"work_data",   "column_name":"industry",    "sub_columns":[       { "column_name":"occupation_role_name" }    ]    }  ], "derived":[  {"attribute_name":"number_of_players", "operation":"COUNTD", "columns":['user_id']}  ]  }  ],
@@ -65,6 +72,15 @@ Accessible properities:
   self.idx === Array of row level indexes
   self.nodes === Array of Nodes class objects
   self.relationships === Array Relationship class objects
+
+
+
+-- FUNCTION: .query_gen() --
+
+Returns two lists of node/rel queries based on the language provided. 
+Valid values today are:
+- "cypher"
+
 
 
 -- FUNCTION: .template() --
@@ -98,8 +114,8 @@ derived calculates data to store as an attribute & works in the following way:
     AVG, SUM, MAX, MIN will only work on numbers and dates. They calculate
     additively. MAX above will get the max date from the union of both columns.
 
-    AVG/MIN/MAX to not have comparitive support yet. 
-    ie: Average across the unique values of both columns above for total_pay
+    AVG/MIN/MAX do not have comparitive support yet. 
+    ie: AVG would give average across the values of both columns above for total_pay
 
     COUNT, COUNTD will work on any datatype. It reads across, so in the example 
     above, team names shared by differentcities would be considered unique. 
@@ -109,7 +125,11 @@ derived calculates data to store as an attribute & works in the following way:
 
 ``````
 
-Example Payload
+Example Payload:
+
+## ~~ 1) Simple, compact
+
+
 {
 
     "nodes":[
@@ -145,6 +165,7 @@ Example Payload
                     "name":"HAS_INTEREST_IN",
                     "from":"person_group_1",
                     "to":"sport_group_1",
+                    "row_attributes":["purchase_type"],
                     "derived":[
                         {"attribute_name":"money_spent", "operation":"SUM", "columns":['transaction_amt']}
                     ]
