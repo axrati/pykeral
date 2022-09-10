@@ -12,7 +12,7 @@ def stack_cols(column_names, df):
 
 def derived_handler(derived_obj, dataframe):
     generic = {}
-    supported_operations = ['AVG','SUM','MAX','MIN','COUNT','COUNTD']
+    supported_operations = ['AVG','SUM','MAX','MIN','COUNT','COUNTD', 'DISTINCT']
 
     sent_option = derived_obj['operation']
     sent_columns = derived_obj['columns']
@@ -42,5 +42,12 @@ def derived_handler(derived_obj, dataframe):
     elif sent_option == "COUNTD":
         data = stack_cols(sent_columns,dataframe)
         return {return_key:len(data['summarizer'].unique())}
+
+    elif sent_option == "DISTINCT":
+        data = stack_cols(sent_columns,dataframe)
+        return {return_key:list(data['summarizer'].unique())}
+    
+    else:
+        raise Exception("An invalid value was sent to the derived handler. Valid values are: \n{}".format(str(supported_operations)))
 
 

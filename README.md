@@ -136,7 +136,8 @@ Derived calculates data to store as an attribute & works in the following way:
       last_visit          MAX       ['patient_visit_date', 'employee_visit_date']
       lowest_score        MIN       ['grade']
       unique_teams       COUNTD     ['sport_city','sport_name']
-      num_of_visits       COUNT     ['person_id']
+      num_of_visits      COUNT      ['person_id']
+      unique_states     DISTINCT    ['state_abbreviation']
                     
      
     You can think of these as hamburger stacking multiple columns and deriving information.
@@ -148,9 +149,11 @@ Derived calculates data to store as an attribute & works in the following way:
 
     COUNT, COUNTD will work on any datatype. It reads across, so in the example 
     above, team names shared by different cities would be considered unique. 
-    COUNT will find the number of times the values are != None or pd.na/nan
+    COUNT will find the number of times the values are != None or pd.na/nan.
 
-    Planned configuration for custom calculations. UNQ coming soon for unique values
+    DISTINCT returns an array of the distinct values. It behaves similar to a one level one-to-many.
+
+    Planned configuration for custom calculations.
 ```
 
 

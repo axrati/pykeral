@@ -15,7 +15,8 @@ config = {
                'one_to_many': [], 
                'derived': [
                    {'attribute_name': 'employees_vaccinated', 'operation': 'SUM', 'columns': ['Emp_Number_Vaccinated']},
-                   {'attribute_name': 'employees_working', 'operation': 'SUM', 'columns': ['Emp_Number_Working']}
+                   {'attribute_name': 'employees_working', 'operation': 'SUM', 'columns': ['Emp_Number_Working']},
+                   {'attribute_name': 'unique_counties', 'operation': 'DISTINCT', 'columns': ['County']}
                    ]
                },
               {'node_group_name': 'a2', 'label': 'Place', 'row_level_node_keys': ['County'], 
