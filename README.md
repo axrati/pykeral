@@ -135,7 +135,7 @@ Derived calculates data to store as an attribute & works in the following way:
       total_pay           SUM       ['paycheck_amt', 'gift_amt']     
       last_visit          MAX       ['patient_visit_date', 'employee_visit_date']
       lowest_score        MIN       ['grade']
-      unique_teams       COUNTD     ['sport_city','sport_name']
+      unique_people      COUNTD     ['customer_id','salesman_id']
       num_of_visits      COUNT      ['person_id']
       unique_states     DISTINCT    ['state_abbreviation']
                     
@@ -147,9 +147,8 @@ Derived calculates data to store as an attribute & works in the following way:
     AVG/MIN/MAX do not have comparitive support yet. 
     ie: AVG would give average across the values of both columns above for total_pay
 
-    COUNT, COUNTD will work on any datatype. It reads across, so in the example 
-    above, team names shared by different cities would be considered unique. 
-    COUNT will find the number of times the values are != None or pd.na/nan.
+    COUNT, COUNTD will work on any datatype. 
+    COUNT will find the number of times the values are != na in pandas.
 
     DISTINCT returns an array of the distinct values. It behaves similar to a one level one-to-many.
 

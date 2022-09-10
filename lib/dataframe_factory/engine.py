@@ -1,6 +1,7 @@
 import pandas as pd
 from lib.utils.tools import all_exist_in
 from lib.dataframe_factory.node_linter import node_df_config_linter
+from lib.dataframe_factory.relationship_linter import relationship_df_config_linter
 from lib.dataframe_factory.df_utils import row_to_dict, get_node, rel_query_gen
 from lib.object_factory.node_factory import Node
 from lib.object_factory.relationship_factory import Relationship
@@ -24,7 +25,9 @@ def node_df_execution(dataframe, schema):
 
     # Node
     for node in schema['nodes']:
-        #node_df_config_linter(node)
+        # Lint for errors
+        node_df_config_linter(node)
+
         label = node['label']
         node_group_name=node['node_group_name']
     
@@ -85,15 +88,11 @@ def node_df_execution(dataframe, schema):
 
 
 
-# {
-#     "rel_group_name":"rel_type_1","name":"HAS_INTEREST_IN","from":"a1","to":"a2", "label":"human_interaction"
-#     "derived":[    
-#             {"attribute_name":"money_spent", "operation":"SUM", "columns":['transaction_amt'] }
-#             ] 
-# } 
-
     # Relationship
     for relationship in schema['relationships']:
+        #Lint for errors
+        relationship_df_config_linter(relationship)
+
         relationship_label = relationship['label']
         from_group = relationship['from']
         to_group = relationship['to']
