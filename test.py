@@ -42,10 +42,17 @@ config = {
 dfx.fish(config)
 
 #5) Generate queries
-dfx.query("cypher")
+dfx.query_generator("cypher")
 
-#6) Wrangle into DB (nodes first)
-print(len(dfx.queries['nodes']))
-print(len(dfx.queries['relationships']))
-print("Have fun, use dfx.help()")
-# dfx.help()
+#6) Connect to database
+dfx.connect("Neo4j", { "host":"localhost", "port":7687, "database":"neo4j", "username":"neo4j", "password":"password" } )
+
+#7) Query/Create your data
+for query in dfx.queries['nodes']:
+    dfx.dbconn.query(query,False)
+for query in dfx.queries['relationships']:
+    dfx.dbconn.query(query,False)
+
+#8) Validate Data
+new_data = dfx.dbconn.query("match (n)-[p]-(m) return n,p,m limit 10")
+print(new_data)

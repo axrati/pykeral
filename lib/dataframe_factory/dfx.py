@@ -3,8 +3,8 @@ from lib.object_factory.node_factory import Node
 from lib.object_factory.relationship_factory import Relationship
 from lib.dataframe_factory.engine import node_df_execution
 from lib.query_compiler.cypher import cypher_compiler
-
-
+from lib.database_connections.db_models.Neo4j import Neo4j
+from lib.utils.tools import all_exist_in
 
 def dfxc(df):
     return dfx(df)
@@ -39,6 +39,8 @@ class dfx:
         self.relationships = []
         self.queries = {"nodes":[], "relationships":[]}
 
+        self.dbconn = None
+
 
     def fish(self,config):
         nodes,relationships = node_df_execution(self.data, config)
@@ -47,7 +49,7 @@ class dfx:
         return nodes, relationships
 
 
-    def query(self,qtype):
+    def query_generator(self,qtype):
         queries = {}
         if qtype=="cypher":
             nq, rq = cypher_compiler(self)
@@ -65,6 +67,30 @@ class dfx:
         return data
 
 
+    def connect(self, system, config):
+
+        config_required_fields = ['host','port','database','username','password']
+        config_check = all_exist_in(config_required_fields, config.keys())
+        if config_check==False:
+            raise Exception("Your configuration for the database did not contain all the required fields. Required Fields:\n{}".format(str(config_required_fields)))
+
+        if system.lower()=="neo4j":
+            self.dbconn = Neo4j(
+                host = config['host'],
+                port = config['port'],
+                database = config['database'],
+                username = config['username'],
+                password = config['password']
+            )
+        elif system.lower()=="neptune":
+            return 1
+        else:
+            supported_systems = ['Neo4j','Neptune']
+            raise Exception("Unknown system provided. Please provide one of the supported systems as a string argument:\n{}".format(str(supported_systems)))
+
+
+
+
 
     def help(self):
             print("""
@@ -78,10 +104,35 @@ Accessible properities:
   self.idx === Array of row level indexes
   self.nodes === Array of Nodes class objects
   self.relationships === Array Relationship class objects
+  self.dbconn === Connection to your database, used to execute queries. Use dfx.connect() to establish
 
 
 
--- FUNCTION: .query_gen() --
+
+-- FUNCTION: .connect() --
+
+Used to create a database connection. Supported systems today are "Neo4j" and "Neptune".
+Requires dictionary with connection info as shown below:
+
+    dfx.connect( "Neo4J", {
+                            "host":"localhost",
+                            "port":5110,
+                            "database":"public",
+                            "username":"cool_user_guy"
+                            "password":"FlX812kd"
+                            }
+                )
+This allows you to execute queries accordingly:
+    dfx.dbconn.query("match (n) return n")
+
+dbconn.query also takes an optional argument of QueryIndicator after the query.
+This is used to indicate whether you want data returned or whether you just want to execute the query.
+Default is True (return data)
+
+
+
+
+-- FUNCTION: .query_generator() --
 
 Returns two lists of node/rel queries based on the language provided. 
 Valid values today are:
@@ -89,9 +140,13 @@ Valid values today are:
 
 
 
+
+
 -- FUNCTION: .template() --
 
 Returns a sample template to provide. Can be simply changed/modified and applied to .fish()
+
+
 
 
 

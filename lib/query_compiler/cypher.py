@@ -28,6 +28,9 @@ def cypher_compiler(dfx):
                         attr_string+=q_dtype(derv_key,derv)
             else:
                 attr_string+=q_dtype(key,node.data)
+        attr_string+=q_dtype('pid',{"pid":node_id})
+
+
         attr_string = attr_string[0:len(attr_string)-2]
         cypher_query = "CREATE (n:{} {{ {} }})".format(label,attr_string)
         node_queries.append(cypher_query)
@@ -58,15 +61,15 @@ def cypher_compiler(dfx):
             else:
                 attr_string+=q_dtype(key,relationship.data)
 
-        samp = {"label":label, "id":rel_id}
+        samp = {"label":label, "pid":rel_id}
         attr_string+= q_dtype("label",samp)
-        attr_string+= q_dtype("id",samp)
+        attr_string+= q_dtype("pid",samp)
 
         attr_string = attr_string[0:len(attr_string)-2]
 
         rel_query = """
-        MATCH (n) where n.id='{}'
-        MATCH (m) where m.id='{}'
+        MATCH (n) where n.pid='{}'
+        MATCH (m) where m.pid='{}'
         WITH n,m
         CREATE (n)-[p:{} {{ {} }}]->(m)
         """.format(from_node_id, to_node_id, relationship.data['name'], attr_string)

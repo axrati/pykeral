@@ -44,25 +44,28 @@ def q_dtype(key,obj):
     except:
         val = obj[key]
 
+    # Remove spaces in keys, forces conformity to cypher
+    cypher_key = key.replace(" ", "")
+    
     #Always pads 2
     if type(val)==str:
-        return "{}:'{}', ".format(key,obj[key])
+        return "{}:'{}', ".format(cypher_key,obj[key])
     elif type(val)==datetime.datetime:
         stripped = str(obj[key]).replace(" ","T")
-        return '{}:datetime("{}"), '.format(key,stripped)
+        return '{}:datetime("{}"), '.format(cypher_key,stripped)
     elif type(val)==datetime.date:
-        return '{}:date("{}"), '.format(key,str(obj[key]))
+        return '{}:date("{}"), '.format(cypher_key,str(obj[key]))
     elif type(val)==list:
-        return '{}:{}, '.format(key,str(obj[key]))
+        return '{}:{}, '.format(cypher_key,str(obj[key]))
     elif type(val)==int or type(val)==float:
-        return '{}:{}, '.format(key,obj[key])
+        return '{}:{}, '.format(cypher_key,obj[key])
     elif type(val)==dict:
         stripped = str(json.dumps(obj[key], cls=np_encoder))
-        start = "{}:".format(key)
+        start = "{}:".format(cypher_key)
         guts = "'"+stripped+"', "
         return start+guts
     elif type(val)==bool:
-        return '{}:{}, '.format(key,obj[key])
+        return '{}:{}, '.format(cypher_key,obj[key])
     else:
         print(key, obj)
         print(type(key), type(obj))
