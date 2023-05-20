@@ -36,17 +36,6 @@ def node_df_execution(dataframe, schema):
         pd_cols = node['row_level_node_keys']
         # Should count be here as a means of "checkout"?
         unique_combinations = dataframe.groupby(pd_cols).size().reset_index().rename(columns={0:'count'})
-        # Perhaps shift this up and use it while looping through relationships !!!!!!!
-        # Much less data to sift through - potentially sub query df faster
-        # Answer is to get distinct keys of each node, filter the dataframe on only those columns, do a distinct.
-        # --- For each key group, determine which nodes have the same triplet of info
-        # I think this info is avilalbe via node['keys'] and the entrance of those keys: node['node['keys'][x]]
-
-        # Is the better solution to add a node_id column to the dataframe?
-        # IE - loop through and add where={fomr-key_1}&&{from-key-2}&&{to-key-1}&&{to-key-2}
-        # Function for this is rel_query_gen
-
-        # Broad then deep search on keys... staged ifs
 
         # This matches index of unique_combos
         node_dicts = row_to_dict(unique_combinations,pd_cols)
@@ -159,19 +148,6 @@ def node_df_execution(dataframe, schema):
             sub_query = multi_cond_query(["pykeral_id_x","pykeral_id_y"],[df_from_id, df_to_id])
             potential_rel = mapped_nodes_df.query(sub_query)
 
-
-        # for frm in from_nodes:
-        #     frm_keys = frm.keys
-        #     frm_data = frm.data
-        #     frm_id = frm.id
-        #     for tom in to_nodes:
-        #         tom_keys = tom.keys
-        #         tom_data = tom.data
-        #         tom_id = tom.id
-        #         sub_query = rel_query_gen(frm_keys, frm_data, tom_keys, tom_data)
-        #         potential_rel = dataframe.query(sub_query)
-
-
             ## Theoretically this shoudl also be true, keeping incase of need to revert to legacy above
             if len(potential_rel)>0:
                 relationship_frame = {}
@@ -201,8 +177,7 @@ def node_df_execution(dataframe, schema):
                 node_rel_data = {"from":df_from_id, "to":df_to_id, "relationship_id":rel_id}
                 node_id_map[df_from_id].add_rel("from",node_rel_data)
                 node_id_map[df_to_id].add_rel("to",node_rel_data)
-                # frm.add_rel("from",node_rel_data)
-                # tom.add_rel("to",node_rel_data)
+
 
 
                     
