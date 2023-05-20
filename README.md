@@ -63,36 +63,36 @@ dfx.queries
 *This is the basic syntax for identifying nodes/relationships. Beneath the codeblock is a description of each key*  
 ```json
 config = {
-    'nodes': 
+    "nodes": 
           [
           
-              {'node_group_name': 'a1', 'label': 'Place', 'row_level_node_keys': ['State'], 
-               'one_to_many': [
+              {"node_group_name": "a1", "label": "Place", "row_level_node_keys": ["State"], 
+               "one_to_many": [
                                {  "attribute_name":"officials", "column_name":"leader_name" }
                ], 
-               'derived': [
-                   {'attribute_name': 'employees_vaccinated', 'operation': 'SUM', 'columns': ['Emp_Number_Vaccinated']},
-                   {'attribute_name': 'employees_working', 'operation': 'SUM', 'columns': ['Emp_Number_Working']}
+               "derived": [
+                   {"attribute_name": "employees_vaccinated", "operation": "SUM", "columns": ["Emp_Number_Vaccinated"]},
+                   {"attribute_name": "employees_working", "operation": "SUM", "columns": ["Emp_Number_Working"]}
                    ]
                },
                
-              {'node_group_name': 'a2', 'label': 'Place', 'row_level_node_keys': ['County'], 
-               'one_to_many': [
+              {"node_group_name": "a2", "label": "Place", "row_level_node_keys": ["County"], 
+               "one_to_many": [
                               {"attribute_name":"officials", "column_name":"leader_name", "sub_columns":[ {"column_name":"leader_child_name"}] }
                ], 
-               'derived': [
-                   {'attribute_name': 'employees_vaccinated', 'operation': 'SUM', 'columns': ['Emp_Number_Vaccinated']},
-                   {'attribute_name': 'employees_working', 'operation': 'SUM', 'columns': ['Emp_Number_Working']}
+               "derived": [
+                   {"attribute_name": "employees_vaccinated", "operation": "SUM", "columns": ["Emp_Number_Vaccinated"]},
+                   {"attribute_name": "employees_working", "operation": "SUM", "columns": ["Emp_Number_Working"]}
                    ]
                }
                
           ], 
-     'relationships': 
+     "relationships": 
               [
-                  {'rel_group_name': 'rel_type_1',  'name': 'HAS_SUBREGION',  'row_attributes': ['Mask Required'], 
-                  'label': 'geographic', 'from': 'a1', 'to': 'a2', 
-                   'derived': [
-                       {'attribute_name': 'hospital_count', 'operation': 'SUM', 'columns': ['Number of Hospitals']}
+                  {"rel_group_name": "rel_type_1",  "name": "HAS_SUBREGION",  "row_attributes": ["Mask Required"], 
+                  "label": "geographic", "from": "a1", "to": "a2", 
+                   "derived": [
+                       {"attribute_name": "hospital_count", "operation": "SUM", "columns": ["Number of Hospitals"]}
                        ]
                    }
                       ]
