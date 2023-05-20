@@ -28,7 +28,7 @@ dfx = dfxc(df)
 
 <br>
 
-*To generate nodes/relationships on your dfx object, fish with a config object (see below example)*  
+*To generate nodes/relationships on your dfx object, fish with a config dict (see below example)*  
 ```python
 dfx.fish(config)
 ```
@@ -61,8 +61,8 @@ dfx.queries
 ### Config
 
 *This is the basic syntax for identifying nodes/relationships. Beneath the codeblock is a description of each key*  
-```python
-config = {
+```json
+{
     "nodes": 
           [
           
