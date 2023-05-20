@@ -23,7 +23,9 @@ def otm_levels(level,place):
 def otm_query(node):
     where = ''
     for key in list(node.keys()):
-        if type(node[key])==str:
+        if node[key] is None:
+            where += "{}.isnull() & ".format(key)
+        elif type(node[key])==str:
             where += "{}=='{}' & ".format(key,node[key])
         else:
             where += "{}=={} & ".format(key,node[key])
