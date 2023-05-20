@@ -61,7 +61,7 @@ dfx.queries
 ### Config
 
 *This is the basic syntax for identifying nodes/relationships. Beneath the codeblock is a description of each key*  
-```json
+```python
 config = {
     "nodes": 
           [
