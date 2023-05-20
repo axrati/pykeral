@@ -45,6 +45,7 @@ def derived_handler(derived_obj, dataframe):
 
     elif sent_option == "DISTINCT":
         data = stack_cols(sent_columns,dataframe)
+        data = data.dropna()
         return {return_key:list(data['summarizer'].unique())}
     
     else:

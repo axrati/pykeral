@@ -76,7 +76,7 @@ config = {
                
               {'node_group_name': 'a2', 'label': 'Place', 'row_level_node_keys': ['County'], 
                'one_to_many': [
-                              {"attribute_name":"officials", "column_name":"leader_name", sub_columns:[ {"column_name":"leader_child_name"}] }
+                              {"attribute_name":"officials", "column_name":"leader_name", "sub_columns":[ {"column_name":"leader_child_name"}] }
                ], 
                'derived': [
                    {'attribute_name': 'employees_vaccinated', 'operation': 'SUM', 'columns': ['Emp_Number_Vaccinated']},
@@ -102,7 +102,7 @@ config = {
 
 * **Node Group Name** - *The user-defined name of the node group to identify in the relationship block*
 * **Label** - *A class based descriptor for this type of node... ie: Person, Place*
-* **Row Level Node Keys** - *The rows that uniquely identify this node in the dataframe*
+* **Row Level Node Keys** - *The rows that uniquely identify this node in the dataframe. Much like a database key, these must never be null. It is recommended that if you have a field that may be null, you can use the `"DISTINCT"` type in the `Derived` section*
 * **One To Many** - *How to bring in data that has multiple values per Row Level Node Keys. More on this below*
 * **Derived** - *Summary/Derived information at the node level, support operations listed below*
 
@@ -137,7 +137,7 @@ Derived calculates data to store as an attribute & works in the following way:
       lowest_score        MIN       ['grade']
       unique_people      COUNTD     ['customer_id','salesman_id']
       num_of_visits      COUNT      ['person_id']
-      unique_states     DISTINCT    ['state_abbreviation']
+      unique_states     DISTINCT    ['state_abbreviation']      
                     
      
     You can think of these as hamburger stacking multiple columns and deriving information.

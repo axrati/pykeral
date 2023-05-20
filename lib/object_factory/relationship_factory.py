@@ -19,7 +19,7 @@ class Relationship:
 Accessible properities:
 
   self.id === Auto-generated id
-  self.data === Dictionary of relationship data
+  self.data === Dictionary of relationship data. At a minumium as keys of "name", "rel_group_name", "derived" and "schema". The other keys are supplied in row_attributes, but isnt required
   self.label === Should really be set
   self.from_to_nodes === From/To Node IDs
 

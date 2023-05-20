@@ -33,6 +33,14 @@ def all_exist_in (arr1, arr2):
     return check==0
 
 
+def list_cleaner(dlist):
+    """
+Remove None's and nan's from lists
+    """
+    new_list = []
+    for i in dlist:
+        print(i)
+    return None
 
 
 
@@ -66,6 +74,10 @@ def q_dtype(key,obj):
         return start+guts
     elif type(val)==bool:
         return '{}:{}, '.format(cypher_key,obj[key])
+    elif obj[key] is None:
+        # Need to understand how to best handle this. Nulls techincally shouldnt exist but its just an attr here
+        return ""
+        # return "{}:'{}', ".format(cypher_key,"NONE")
     else:
         print(key, obj)
         print(type(key), type(obj))
