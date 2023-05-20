@@ -7,17 +7,19 @@
 ### How to get started
 
 *Install the library in the dist/ folder*  
-```
+```shell
 pip install pykeral.whl
 ```
 
-*Import dfxc from the main library*  
-```
+*Import dfxc and pandas from the main libraries*  
+```python
 from pykeral.main import dfxc
+import pandas as pd
 ```
 
 *Apply to a dataframe*  
-```
+```python
+df = pd.Dataframe() # Your data goes here
 dfx = dfxc(df)
 ```
 <br>
@@ -27,12 +29,12 @@ dfx = dfxc(df)
 <br>
 
 *To generate nodes/relationships on your dfx object, fish with a config object (see below example)*  
-```
+```python
 dfx.fish(config)
 ```
 
 *Access the data*  
-```
+```python
 dfx.nodes
 dfx.relationships
 
@@ -41,12 +43,12 @@ dfx.relationships[0].help()
 ```
 
 *Generate queries (only Cypher today)*  
-```
+```python
 dfx.query("cypher")
 ```
 
 *Access Queries*  
-```
+```python
 dfx.queries
 ```
 
@@ -59,7 +61,7 @@ dfx.queries
 ### Config
 
 *This is the basic syntax for identifying nodes/relationships. Beneath the codeblock is a description of each key*  
-```
+```json
 config = {
     'nodes': 
           [
