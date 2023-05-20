@@ -6,6 +6,20 @@
 
 ### How to get started
 
+
+
+
+### FOR CURRENT DEVELOPMENT ONLY:
+
+*Pull this repository down, use the `test.py` and `manual_test.py` files to pass data through. One is built for reading csv's and the other is a manually created ```python list[dict]```*  
+```shell
+git clone https://github.com/axrati/pykeral.git
+```
+
+
+### FUTURE STATE
+
+
 *Install the library in the dist/ folder*  
 ```shell
 pip install pykeral.whl
