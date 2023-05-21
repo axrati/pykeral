@@ -186,23 +186,6 @@ CREATE (n:Drink {
 """
 ```
 
-```python
-dfx.fish(config)
-dfx.query_generator("cypher")
-
-print(dfx.queries['nodes'][0])
-"""
-CREATE (n:Drink { 
-        product:'Coca-Cola', 
-        flavors:'{"flavors": [
-                            {"product_flavor": "Cherry", "flavor_version": ["v1.0", "v2.0", "v3.0"]}, 
-                            {"product_flavor": "Lime", "flavor_version": ["v1.0", "v2.0"]}, 
-                            {"product_flavor": "Raspberry", "flavor_version": ["v1.0"]}
-                            ]}', 
-        pid:'134df4f9-3ca8-4c6a-aeba-8d69da173263' 
-})
-"""
-```
 
 
 <br>
