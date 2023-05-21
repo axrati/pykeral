@@ -1,88 +1,244 @@
 # Pykeral
 
-## A pandas to graph database library
+<style>h1,h2,h3,h4 { border-bottom: 0; } </style>
+
+### Turn your relational data into ready-to-query graph databases. 
+____
+###### Put your data into a dataframe and provide a simple configuration....
+
+```python 
+Thats all it takes.
+```
+###### This library generates all the queries you need to instantiate your dataframes in a graph database.
+
+______
+
+<br>
 
 
 
-### How to get started
+# Get Started - Link to "Hello, World!"
+
+#### Pull this repository down, click below for the "Hello, World!". You can run/edit the `test.py` & `manual_test.py` files directly or create your own.
+<br>
+
+[`CLICK HERE TO VIEW OUR "HELLO WORLD"`](#hello-world-tutorial) 
+
+<br>
 
 
 
-
-### FOR CURRENT DEVELOPMENT ONLY:
-
-*Pull this repository down, use the `test.py` and `manual_test.py` files to pass data through. One is built for reading csv's and the other is a manually created ```list[dict]```*  
 ```shell
 git clone https://github.com/axrati/pykeral.git
 ```
-
-
-### FUTURE STATE
-
-
-*Install the library in the dist/ folder*  
 ```shell
-pip install pykeral.whl
+python test.py
 ```
 
-*Import dfxc and pandas from the main libraries*  
+
+###### *Coming soon it will be `pip install pykeral`*
+
+<br>
+
+______
+
+
+
+<br>
+
+
+
+# Pykeral Workflow/Process Explanation
+
+This section will show you how you should be using pykeral to seed your graph database.
+
+
+# `STEP ONE` 
+### Generate Nodes/Relationships
+
+*The first thing you do is create a `dfx` object. To create one, all you need is a dataframe. Import dfxc and pandas from the main libraries.*
+
 ```python
 from pykeral.main import dfxc
 import pandas as pd
 ```
 
 *Apply to a dataframe*  
-```python
-df = pd.Dataframe() # Your data goes here
+```rust
+df = pd.Dataframe() // Add your dataframe here - this can be empty for now
 dfx = dfxc(df)
 ```
-<br>
 
-*You're good to go. Use  **dfx.help()**  for a printout of helpful hints*
+*To generate nodes/relationships on your dfx object, you will provide a `config` object and pass it to the `fish()` function.* [Click here to see how to create the `config` object.](#hello-world-tutorial)
 
-<br>
 
-*To generate nodes/relationships on your dfx object, fish with a config dict (see below example)*  
-```python
+```rust
 dfx.fish(config)
 ```
 
-*Access the data*  
-```python
+*When you run `fish()`, it creates all of your nodes/relationships and makes it available to the `dfx` object... You'll be able to access them like this*
+
+```haskell
 dfx.nodes
 dfx.relationships
-
-dfx.nodes[0].help()
-dfx.relationships[0].help()
 ```
 
-*Generate queries (only Cypher today)*  
+*These are arrays containing your nodes and relationships. Each node/array has a `.help()` function that provides data accessing information*
 ```python
-dfx.query("cypher")
+first_node = dfx.nodes[0]
+first_node.help()
+
+first_relationship = dfx.relationships[0]
+first_relationship.help()
 ```
 
-*Access Queries*  
-```python
-dfx.queries
+
+_____
+
+<br>
+
+
+# `STEP TWO` 
+### Generate Queries for Graph Database
+
+<br>
+
+ *To generate your graph database migration queries, call the `.query_generator()` on your `dfx` object.*
+
+###### *This feature only supports Cypher today* 
+```rust
+dfx.query_generator("cypher")
+``` 
+
+
+<br>
+
+
+*This will make your queries accessible here. You'll need to execute your `Node` queries before your `Relationship` queries.*  
+```golang
+for query in dfx.queries['nodes']:
+    print(query)
+for query in dfx.queries['relationships']:
+    print(query)
+```
+
+_____
+
+<br>
+
+# `STEP THREE` 
+### Connect to database and populate data
+
+
+<br>
+
+*You can connect to Neo4j directly using `.connect()`. This is the basic localhost setup, but you can configure any connection you need.*  
+```rust
+dfx.connect("Neo4j", { "host":"localhost", "port":7687, "database":"neo4j", "username":"neo4j", "password":"password" } )
 ```
 
 <br>
 
-**Take a look at the test.py file as an example of how to use this library.**
+*From here, you can loop through your queries to seed your database. We provide `False` in the `.query()` because we are not expecting any data back.*  
+```rust
+for n_query in dfx.queries['nodes']:
+    dfx.dbconn.query(n_query,False)
+
+for r_query in dfx.queries['relationships']:
+    dfx.dbconn.query(r_query,False)
+```
 
 <br>
 
-### Config
+*Your database is now seeded! You can use `dfx.query()` to pull data directly from your databse.*
+```javascript
+query = "MATCH (n)-[p]-(m) RETURN n,p,m"
+results = dfx.dbconn.query(query)
+```
 
-*This is the basic syntax for identifying nodes/relationships. Beneath the codeblock is a description of each key*  
+
+
+<br>
+<br>
+<br>
+<br>
+
+_____
+
+<br>
+
+# Hello World Tutorial
+
+*Let's start with a simple dataframe*  
+```python
+raw_data = [
+     {"product_flavor":"Cherry", "flavor_version":"v1.0",  "product":"Coca-Cola", "vendor":"CC Corp"},
+     {"product_flavor":"Cherry", "flavor_version":"v2.0", "product":"Coca-Cola", "vendor":"CC Corp"},
+     {"product_flavor":"Lime", "flavor_version":"v1.0","product":"Coca-Cola", "vendor":"CC Corp"},
+     {"product_flavor":"Lime", "flavor_version":"v2.0", "product":"Coca-Cola", "vendor":"CC Corp"},
+     {"product_flavor":"Raspberry", "flavor_version":"v1.0","product":"Coca-Cola", "vendor":"CC Corp"}
+     ]
+
+data = pd.DataFrame(raw_data)
+```
+
+
+*Here is the syntax for identifying nodes/relationships. The high level object is a dictionary with a key of `nodes` and `relationship`*
+
+```python
+config = {
+    "nodes":[],
+    "relationships":[]
+}
+```
+
+<br>
+
+*This would be a simple `node_configuration` that we can add to the nodes array*
+
+```json
+    {
+        "node_group_name": "manufacturers", 
+        "label": "Manufacturer", 
+        "row_level_node_keys": ["vendor"], 
+        "one_to_many": [], 
+        "derived": []
+    }
+```
+
+*The `row_level_node_keys` basically identify the unique columns in your Dataframe that represent an object.*<br>
+*Using the beginner dataset, this would only identify one node: `CC Corp`*<br>
+*It's basically asking for the primary keys of a Node. No column provided should ever have a `NULL`.*
+
+<br>
+*Here is a sample node configuration:
+
+
+```json
+{
+    "node_group_name": "a1", 
+    "label": "Drink", 
+    "row_level_node_keys": ["product"], 
+    "one_to_many": [
+                       {  
+                            "attribute_name":"flavors", 
+                            "column_name":"product_flavor", 
+                            "sub_columns":[{"column_name":"flavor_version"}]
+                        }
+                   ], 
+   "derived": []
+               }
+```
+
+
 ```json
 {
     "nodes": 
           [
           
-              {"node_group_name": "a1", "label": "Place", "row_level_node_keys": ["State"], 
+              {"node_group_name": "drinks", "label": "Drinks", "row_level_node_keys": ["soda_name","soda_manufacturer"], 
                "one_to_many": [
-                               {  "attribute_name":"officials", "column_name":"leader_name" }
+                               {  "attribute_name":"flavors", "column_name":"soda_flavor" }
                ], 
                "derived": [
                    {"attribute_name": "employees_vaccinated", "operation": "SUM", "columns": ["Emp_Number_Vaccinated"]},
