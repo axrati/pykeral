@@ -206,19 +206,20 @@ Derived calculates data to store as an attribute & works in the following way:
       unique_states     DISTINCT    ['state_abbreviation']      
                     
 ```
-
+<br>
 You can think of these as hamburger stacking multiple columns and deriving information.
     
 
---- *AVG, SUM, MAX, MIN will only work on numbers and dates. They calculate additively.<br>-.-.-.-.-.-.- For Example: MAX above will get the max date from the union of both columns.*
 
---- *AVG/MIN/MAX do not have comparitive support yet. <br>-.-.-.-.-.-.- For Example: AVG would give average across the values of both columns above for total_pay in the example above*
+- AVG, SUM, MAX, MIN will only work on numbers and dates. They calculate additively. `For Example: MAX above will get the max date from the union of both columns`
 
---- *COUNT, COUNTD will work on any datatype. COUNT will find the number of times the values are != na in pandas.*
+- AVG/MIN/MAX do not have comparitive support yet.`For Example: AVG would give average across the values of both columns above for total_pay in the example above`
 
---- *DISTINCT returns an array of the distinct values. It behaves similar to a one level one-to-many.*
+- COUNT, COUNTD will work on any datatype. COUNT will find the number of times the values are `!= na` in pandas.
 
---- *Planned configuration for custom calculations, TBD on priorities*
+- DISTINCT returns an array of the distinct values. It behaves similar to a one level one-to-many.
+
+- Planned configuration for custom calculations, TBD on priorities
 
 
 <br>
