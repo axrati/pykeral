@@ -51,33 +51,59 @@ def node_df_execution(dataframe, schema):
             processed_otm=[]
             for otm in node['one_to_many']:
                 attr_name = otm['attribute_name']
-                # if type()
-                level_cols_in_order = [otm['column_name']]
-                # If you wanted to supply multiple columns for a otm
-                # level_cols_in_order = otm['column_name']
+                distinct_head_values = list(node_sub_data[otm['column_name']].unique())
                 col_sub_maps = []
+                level_cols_in_order = [otm['column_name']]
                 otm_trav(otm, col_sub_maps, level_cols_in_order)
-                otm_sub_data = node_sub_data[level_cols_in_order]
-                otm_sub_nodes = row_to_dict(otm_sub_data, level_cols_in_order)
-                itemization = []
-                if col_sub_maps == []:
-                    generics = {}
-                    d_vals = list(otm_sub_data[otm['column_name']].unique())
-                    generics[attr_name]=d_vals
-                    itemization.append(generics)
-
+                
+                # Loop through this
                 for mapping in col_sub_maps:
-                    generics = {}
-                    generics[attr_name]={}
+                    primary_obj = {}
                     keyname = mapping['first']
-                    d_vals = list(otm_sub_data[keyname].unique())
-                    generics[attr_name][keyname]=d_vals
+                    primary_obj[attr_name]=[]
                     
-                    # generics[keyname]=d_vals
-                    for val in mapping['then']:
-                        generics[val]=list(otm_sub_data[val].unique())
-                    itemization.append(generics)
-                processed_otm.append(itemization)
+                    generics = []
+                    for dhv in distinct_head_values:
+                        # sub_release
+                        otm_sub_data = node_sub_data[node_sub_data[otm['column_name']]==dhv]
+                        d_vals = list(otm_sub_data[keyname].unique())
+                        sub_obj = {keyname:dhv}
+                        for val in mapping['then']:
+                            # sub_gen = 
+                            sub_obj[val]=list(otm_sub_data[val].unique())
+                        generics.append(sub_obj)
+                    # End Mapping, add to otm's
+                    processed_otm.append({attr_name:generics})
+                # attr_name = otm['attribute_name']
+                # # if type()
+                # level_cols_in_order = [otm['column_name']]
+                # # If you wanted to supply multiple columns for a otm
+                # # level_cols_in_order = otm['column_name']
+                # col_sub_maps = []
+                # otm_trav(otm, col_sub_maps, level_cols_in_order)
+                # # col_sub_maps is actually added to via this function ^^^^
+                # otm_sub_data = node_sub_data[level_cols_in_order]
+                # otm_sub_nodes = row_to_dict(otm_sub_data, level_cols_in_order)
+                # itemization = []
+                # if col_sub_maps == []:
+                #     generics = {}
+                #     # By default every OTM will be an array if one level. Sub direct types will be ddded at another time
+                #     d_vals = list(otm_sub_data[otm['column_name']].unique())
+                #     generics[attr_name]=d_vals
+                #     itemization.append(generics)
+
+                # for mapping in col_sub_maps:
+                #     generics = {}
+                #     generics[attr_name]={}
+                #     keyname = mapping['first']
+                #     d_vals = list(otm_sub_data[keyname].unique())
+                #     generics[attr_name][keyname]=d_vals
+                    
+                #     # generics[keyname]=d_vals
+                #     for val in mapping['then']:
+                #         generics[val]=list(otm_sub_data[val].unique())
+                #     itemization.append(generics)
+                # processed_otm.append(itemization)
                 
             node_row['otm']=processed_otm
 
