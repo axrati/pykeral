@@ -133,18 +133,68 @@ dfx.queries
 <br>
 
 ### One To Many
-*One to many relationships mean there are multiple values per row-level-keys on a given node.*
-*By defining one, you bring those values in as an array under the key name of "attribute_name".*
-*You can also define even further levels of detail, which will return you an object (dict in python) value under that attribute_name. You can access these all you want in the dfx.nodes interface.*
-*However, because these arent supported in some databases, the Cypher compiler currently writes it as a string for you.*
+One to many relationships mean there are multiple values per row-level-keys on a given node. If you are looking for a simple array of a row value, its recommended you use the derived's `DISTINCT` configuration<br><br>
+This functionality is more or less `JSON`'ifying your data and storing it as a string.<br><br> This was created because multi-level type dictionaries arent available in Neo4J - so this alternative is storing objects as strings. The first level requires the keys "attribute_name" and "column_name"... "sub_columns" is optional and only requires "column_name" after that.*
 
-*The first level requires the keys "attribute_name" and "column_name"... "sub_columns" is optional (and any similar nested sub_column) only require "column_name" after that.*
+*Consider taking the below data:*
+```python
+raw_data =  [
+     {"product_flavor":"Cherry", "flavor_version":"v1.0",  "product":"Coca-Cola", "vendor":"CC Corp"},
+     {"product_flavor":"Cherry", "flavor_version":"v2.0", "product":"Coca-Cola", "vendor":"CC Corp"},
+     {"product_flavor":"Cherry", "flavor_version":"v3.0", "product":"Coca-Cola", "vendor":"CC Corp"},
+     {"product_flavor":"Lime", "flavor_version":"v1.0","product":"Coca-Cola", "vendor":"CC Corp"},
+     {"product_flavor":"Lime", "flavor_version":"v2.0", "product":"Coca-Cola", "vendor":"CC Corp"},
+     {"product_flavor":"Raspberry", "flavor_version":"v1.0","product":"Coca-Cola", "vendor":"CC Corp"}
+     ]
+df = pd.DataFrame(raw_data)
+dfx = dfxc(df)
+```
+
+*And providing a node config of this:*
+```
+config = {
+    'nodes': 
+          [
+              {"node_group_name": "a1", "label": "Drink", "row_level_node_keys": ["product"], 
+               "one_to_many": [
+                               {  "attribute_name":"flavors", "column_name":"product_flavor", "sub_columns":[{"column_name":"flavor_version"}] }
+               ], 
+               "derived": []
+               }
+          ], 
+     'relationships': 
+              []
+      }
+```
+
+*You can expect this as a query outcome:*
+```python
+dfx.fish(config)
+dfx.query_generator("cypher")
+
+print(dfx.queries['nodes'][0])
+"""
+CREATE (n:Drink { 
+        product:'Coca-Cola', 
+        flavors:'{"flavors": [
+                            {"product_flavor": "Cherry", "flavor_version": ["v1.0", "v2.0", "v3.0"]}, 
+                            {"product_flavor": "Lime", "flavor_version": ["v1.0", "v2.0"]}, 
+                            {"product_flavor": "Raspberry", "flavor_version": ["v1.0"]}
+                            ]}', 
+        pid:'134df4f9-3ca8-4c6a-aeba-8d69da173263' 
+})
+"""
+```
+
+
+
 
 <br>
 
 ### Derived
 
 Derived calculates data to store as an attribute & works in the following way:
+
 ```
     (attribute_name)   (operation)     (columns)                
       average_time        AVG       ['play_minutes']                 
@@ -155,20 +205,24 @@ Derived calculates data to store as an attribute & works in the following way:
       num_of_visits      COUNT      ['person_id']
       unique_states     DISTINCT    ['state_abbreviation']      
                     
-     
-    You can think of these as hamburger stacking multiple columns and deriving information.
-    
-    AVG, SUM, MAX, MIN will only work on numbers and dates. They calculate additively. MAX above will get the max date from the union of both columns.
-
-    AVG/MIN/MAX do not have comparitive support yet. 
-    ie: AVG would give average across the values of both columns above for total_pay
-
-    COUNT, COUNTD will work on any datatype. 
-    COUNT will find the number of times the values are != na in pandas.
-
-    DISTINCT returns an array of the distinct values. It behaves similar to a one level one-to-many.
-
-    Planned configuration for custom calculations.
 ```
+
+You can think of these as hamburger stacking multiple columns and deriving information.
+    
+
+--- *AVG, SUM, MAX, MIN will only work on numbers and dates. They calculate additively.<br>-.-.-.-.-.-.- For Example: MAX above will get the max date from the union of both columns.*
+
+--- *AVG/MIN/MAX do not have comparitive support yet. <br>-.-.-.-.-.-.- For Example: AVG would give average across the values of both columns above for total_pay in the example above*
+
+--- *COUNT, COUNTD will work on any datatype. COUNT will find the number of times the values are != na in pandas.*
+
+--- *DISTINCT returns an array of the distinct values. It behaves similar to a one level one-to-many.*
+
+--- *Planned configuration for custom calculations, TBD on priorities*
+
+
+<br>
+
+<br>
 
 
