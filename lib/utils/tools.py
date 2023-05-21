@@ -68,7 +68,9 @@ def q_dtype(key,obj):
     elif type(val)==int or type(val)==float:
         return '{}:{}, '.format(cypher_key,obj[key])
     elif type(val)==dict:
-        stripped = str(json.dumps(obj[key], cls=np_encoder))
+        stripped = str(json.dumps(val, cls=np_encoder))
+        # stripped = str(json.dumps(obj))
+        stripped = stripped.replace("'","\\'")
         start = "{}:".format(cypher_key)
         guts = "'"+stripped+"', "
         return start+guts

@@ -17,10 +17,8 @@ def cypher_compiler(dfx):
         for key in node_attrs:
             if key == "otm":
                 for otm in node.data[key]:
-                    for sub in otm:
-                        otm_keys = list(sub.keys())
-                        for otm_key in otm_keys:
-                            attr_string+=q_dtype(otm_key, sub)
+                    accessor = list(otm.keys())[0]
+                    attr_string+=q_dtype(accessor,{accessor:otm})
             elif key == "derived":
                 for derv in node.data[key]:
                     derv_keys = list(derv.keys())
