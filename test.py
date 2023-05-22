@@ -49,7 +49,7 @@ dfx.query_generator("cypher")
 
 #7) Query/Create your data
 for query in dfx.queries['nodes']:
-    dfx.dbconn.query(query,False)
+    # dfx.dbconn.query(query,False)
     print(query)
 for query in dfx.queries['relationships']:
     print(query)
