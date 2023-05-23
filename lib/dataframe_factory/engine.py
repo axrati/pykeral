@@ -140,45 +140,63 @@ def node_df_execution(dataframe, schema):
         # In this code it'll be from->to
         mapped_nodes_df = dataframe.merge(from_ng_map,on=from_keys).merge(to_ng_map,on=to_keys)
         # ^^^ Use this data for all your queries now, as you only want sums and stuff from this
-        pure_id_map = mapped_nodes_df[['pykeral_id_x','pykeral_id_y']]
-        pure_id_map=pure_id_map.drop_duplicates()
-        pure_id_map=pure_id_map.rename(columns={'pykeral_id_x':"from",'pykeral_id_y':"to"})
-        potential_match_count = len(pure_id_map)
+
+        # This data below is to identify your "row-level-relationships".. ie: node keys + rel keys
+        rel_level_required_columns = row_attrs+['pykeral_id_x','pykeral_id_y']
+        row_level_rels = mapped_nodes_df[rel_level_required_columns]
+        row_level_rels = row_level_rels.drop_duplicates()
+        row_level_rels = row_level_rels.rename(columns={'pykeral_id_x':"from",'pykeral_id_y':"to"})
+        nrels = len(row_level_rels)
+        rel_iterator = 1
+
         # Loop through these combinations and apply relationship
-        for idx,row in pure_id_map.iterrows():
-            print(f"Creating ({from_group}) --> ({to_group}) relationship {idx+1} / {potential_match_count}", end="\r")
+        for idx, row in row_level_rels.iterrows():
+            # We dont use IDX here because it wasnt reset on above df. Could be useful to have if needing to debug something
+            print(f"Creating ({from_group}) --> ({to_group}) relationship {rel_iterator} / {nrels}", end="\r")
+            # Get ID's at a minimum
             df_from_id = row['from']
             df_to_id = row['to']
-            sub_query = multi_cond_query(["pykeral_id_x","pykeral_id_y"],[df_from_id, df_to_id])
+            # Handle if there are multi-values for rows to consider here
+            mc_q_cols = ["pykeral_id_x","pykeral_id_y"]
+            mc_q_vals = [df_from_id, df_to_id]
+            # Build the relationship level dataset (row-attrs if applicable)
+            for attr in row_attrs:
+                mc_q_cols.append(attr)
+                mc_q_vals.append(row[attr])
+            # Build query and get potential relationship data
+            sub_query = multi_cond_query(mc_q_cols,mc_q_vals)
             potential_rel = mapped_nodes_df.query(sub_query)
 
             # Relationship skeleton
             relationship_frame = {}
             all_rel_columns = list(potential_rel.columns)
+
             # Add any row attributes
-            if len(row_attrs)>0:
-                for attr in row_attrs:
-                    # This should always be 1 if its true row-level-attributes, but we array it just in case
-                    attrs_df_vals = list(potential_rel[attr].unique())
-                    if len(attrs_df_vals)==1:
-                        relationship_frame[attr]=attrs_df_vals[0]
-                    else:
-                        relationship_frame[attr]=attrs_df_vals
+            for attr in row_attrs:
+                relationship_frame[attr]=row[attr]
+
+            # Apply all additional metadata/information
             schema_data = row_to_dict(potential_rel,all_rel_columns)
+            relationship_frame['schema']=schema_data
             relationship_frame['name']=relationship['name']
             relationship_frame['rel_group_name']=rel_group_name
             from_to_nodes={"from":df_from_id, "to":df_to_id}
+
             # Get Derived
             relationship_derived = []
             for derv in relationship['derived']:
                 derv_final = derived_handler(derv,potential_rel)
                 if derv_final is not None:
                     relationship_derived.append(derv_final)
+            # Apply derived
             relationship_frame['derived']=relationship_derived
-            relationship_frame['schema']=schema_data
+
+            # Create Relationship
             final_rel = Relationship(schema=relationship_frame, from_to_nodes=from_to_nodes, label=relationship_label)
             relationships.append(final_rel)
-            # Manage Node Data
+            rel_iterator+=1
+
+            # Manage Node Data propogation
             rel_id = final_rel.id
             node_rel_data = {"from":df_from_id, "to":df_to_id, "relationship_id":rel_id}
             node_id_map[df_from_id].add_rel("from",node_rel_data)

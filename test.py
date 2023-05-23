@@ -30,7 +30,7 @@ config = {
      'relationships': 
               [
                   {
-                      'rel_group_name': 'rel_type_1',  'name': 'HAS_SUBREGION',  'row_attributes': ['Mask Required'], 
+                    'rel_group_name': 'rel_type_1',  'name': 'HAS_SUBREGION',  'row_attributes': ['Mask Required'], 
                     'label': 'geographic', 'from': 'state-level-nodes', 'to': 'county-level-nodes', 
                     'derived': [
                         {'attribute_name': 'hospital_count', 'operation': 'SUM', 'columns': ['Number of Hospitals']}
@@ -49,12 +49,12 @@ dfx.query_generator("cypher")
 # dfx.connect("Neo4j", { "host":"localhost", "port":7687, "database":"neo4j", "username":"neo4j", "password":"password" } )
 
 # #7) Query/Create your data
-# for query in dfx.queries['nodes']:
-#     # dfx.dbconn.query(query,False)
-#     print(query)
-# for query in dfx.queries['relationships']:
-#     print(query)
-#     # dfx.dbconn.query(query,False)
+for query in dfx.queries['nodes']:
+    # dfx.dbconn.query(query,False)
+    print(query)
+for query in dfx.queries['relationships']:
+    print(query)
+    # dfx.dbconn.query(query,False)
 
 # #8) Validate Data
 # new_data = dfx.dbconn.query("match (n)-[p]-(m) return n,p,m limit 10")
