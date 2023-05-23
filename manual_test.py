@@ -3,12 +3,12 @@ import pandas as pd
 
 #1) Create Data
 raw_data =  [
-     {"product_flavor":"Cherry", "flavor_version":"v1.0",  "product":"Coca-Cola", "vendor":"CC Corp"},
-     {"product_flavor":"Cherry", "flavor_version":"v2.0", "product":"Coca-Cola", "vendor":"CC Corp"},
-     {"product_flavor":"Cherry", "flavor_version":"v3.0", "product":"Coca-Cola", "vendor":"CC Corp"},
-     {"product_flavor":"Lime", "flavor_version":"v1.0","product":"Coca-Cola", "vendor":"CC Corp"},
-     {"product_flavor":"Lime", "flavor_version":"v2.0", "product":"Coca-Cola", "vendor":"CC Corp"},
-     {"product_flavor":"Raspberry", "flavor_version":"v1.0","product":"Coca-Cola", "vendor":"CC Corp"}
+     {"product_flavor":"Cherry", "flavor_version":"v1.0",  "product":"Coca-Cola", "vendor":"CC Corp", "cost":123},
+     {"product_flavor":"Cherry", "flavor_version":"v2.0", "product":"Coca-Cola", "vendor":"CC Corp", "cost":123},
+     {"product_flavor":"Cherry", "flavor_version":"v3.0", "product":"Coca-Cola", "vendor":"CC Corp", "cost":123},
+     {"product_flavor":"Lime", "flavor_version":"v1.0","product":"Coca-Cola", "vendor":"CC Corp", "cost":None},
+     {"product_flavor":"Lime", "flavor_version":"v2.0", "product":"Coca-Cola", "vendor":"CC Corp", "cost":None},
+     {"product_flavor":"Raspberry", "flavor_version":"v1.0","product":"Coca-Cola", "vendor":"CC Corp", "cost":123}
      ]
 df = pd.DataFrame(raw_data)
 
@@ -19,17 +19,27 @@ dfx = dfxc(df)
 config = {
     'nodes': 
           [
-              {"node_group_name": "a1", "label": "Drink", "row_level_node_keys": ["product"], 
-               "one_to_many": [
-                               {  "attribute_name":"flavors", "column_name":"product_flavor", 
-                                    "sub_columns":[{"column_name":"flavor_version"}]
-                                }
-               ], 
-               "derived": []
+              {"node_group_name": "a1", 
+               "label": "Drink", 
+               "row_level_node_keys": ["product_flavor"], 
+               "one_to_many": [], 
+               "derived": [{"attribute_name":"total_cost","columns":["cost"],"operation":"SUM"}]
+               },
+                {"node_group_name": "a2", 
+                "label": "Drink", 
+                "row_level_node_keys": ["product"], 
+                "one_to_many": [], 
+                "derived": [{"attribute_name":"total_cost","columns":["cost"],"operation":"SUM"}]
                }
           ], 
      'relationships': 
               [
+                {
+                    "rel_group_name": "manuf_to_soda",  "label": "genesis_type_relationship",  "name": "CREATED",  
+                    "derived": [],
+                    "from": "a1", "to": "a2",
+                    "row_attributes": ["flavor_version"], 
+                   }
                     ]
       }
 
@@ -53,14 +63,3 @@ for query in dfx.queries['relationships']:
 # #8) Validate Data
 # new_data = dfx.dbconn.query("match (n)-[p]-(m) return n,p,m limit 10")
 # print(new_data)
-
-# print(dfx.queries)
-
-
-
-
-
-
-
-
-

@@ -26,17 +26,22 @@ ______
 <br>
 
 
-
+*Pull*
 ```shell
 git clone https://github.com/axrati/pykeral.git
 ```
-
-```haskell
+*Install*
+```shell
+python setup.py bdist_wheel
+pip install dist/pykeral-0.1.0-py3-none-any.whl --force-reinstall
+```
+*Run!*
+```shell
 python test.py
 ```
 
 
-###### *Coming soon it will be `pip install pykeral`*
+###### *Coming soon it will be `pip install pykeral` from main py-repository*
 
 <br>
 
@@ -305,7 +310,7 @@ config = {
 
 *The `row_level_node_keys` are row level attributes outside of nodes attributes that you want to capture on a relationship. This can be an empty array if you just want to align a basic relationship.*
 
-###### *For example: If you added `release_date` to row_attributes in this example, then you would get a new relationship for each distinct value of `release_date` for a "manufacturer"/"soda" node grouping.*
+###### *For example: If you added `release_date` to row_attributes in this example, then you would get an array containing each distinct value of `release_date` for a "manufacturer"/"soda" node grouping.*
 
 <br>
 
@@ -341,7 +346,7 @@ _____
 
 <br>
 
-*You can now pass this object to `dfx.fish()` and follow the pykeral workflow above!:*
+*You can now pass this object to `dfx.fish()` and follow the pykeral workflow above!*
 
 _____
 
@@ -350,21 +355,6 @@ _____
 
 <br>
 <br>
-
-<!-- ### Nodes
-
-* **Node Group Name** - *The user-defined name of the node group to identify in the relationship block*
-* **Label** - *A class based descriptor for this type of node... ie: Person, Place*
-* **Row Level Node Keys** - *The rows that uniquely identify this node in the dataframe. Much like a database key, these must never be null. It is recommended that if you have a field that may be null, you can use the `"DISTINCT"` type in the `Derived` section*
-* **One To Many** - *How to bring in data that has multiple values per Row Level Node Keys. More on this below*
-* **Derived** - *Summary/Derived information at the node level, support operations listed below*
-
-### Relationships
-
-* **Relationship Group Name** - *The user-defined name of the relationship group for later use in dfx's*
-* **Label** - *A class based descriptor for this type of relationship... ie: Geographic, Communication*
-* **Row Level Attributes** - *Row level detail that you want to list as attributes between shared node groups*
-* **Derived** - *Summary/Derived information at the relationship level, support operations listed below* -->
 
 
 <br>
@@ -472,7 +462,8 @@ DISTINCT <!--   Returns an array of the distinct attribute values across the nod
 You can think of these as hamburger stacking multiple columns and deriving information.
     
 
-
+- `NULL` values are excluded from any operations. If an operation yields null or nan it will exclude that key from being created on the target node/relationship.
+  
 - AVG, SUM, MAX, MIN will only work on numbers and dates. They calculate additively. `For Example: MAX above will get the max date from the union of both columns`
 
 - AVG/MIN/MAX do not have comparitive support yet.`For Example: AVG would give average across the values of both columns above for total_pay in the example above`
