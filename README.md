@@ -308,7 +308,7 @@ config = {
 
 *The `from` and `to` keys are how you align your node config to a relationship config. Just use the `node_group_name` you defined in your schema.*<br>
 
-*The `row_level_node_keys` are a key between node mappings that you want to capture on a relationship. This can be an empty array if you just want to align a basic relationship.*
+*The `row_level_node_keys` are column keys between node mappings that you want to capture on a relationship. This can be an empty array if you just want to align a basic relationship.*
 
 ###### *For example: If you added `flavor_version` to row_attributes in this example, then you would get a new relationship for each distinct value of `flavor_version` for a "manufacturer"-to-"soda" node mapping.*
 
