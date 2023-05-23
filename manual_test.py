@@ -20,16 +20,16 @@ config = {
     'nodes': 
           [
               {"node_group_name": "a1", 
-               "label": "Drink", 
-               "row_level_node_keys": ["product_flavor"], 
+               "label": "Vendor", 
+               "row_level_node_keys": ["vendor"], 
                "one_to_many": [], 
-               "derived": [{"attribute_name":"total_cost","columns":["cost"],"operation":"SUM"}]
+               "derived": []
                },
                 {"node_group_name": "a2", 
-                "label": "Drink", 
-                "row_level_node_keys": ["product"], 
+                "label": "Product", 
+                "row_level_node_keys": ["product","product_flavor"], 
                 "one_to_many": [], 
-                "derived": [{"attribute_name":"total_cost","columns":["cost"],"operation":"SUM"}]
+                "derived": []
                }
           ], 
      'relationships': 

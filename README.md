@@ -183,11 +183,11 @@ _____
 *Let's start with a simple dataframe*  
 ```python
 raw_data = [
-     {"product_flavor":"Cherry", "flavor_version":"v1.0",  "product":"Coca-Cola", "vendor":"CC Corp", "release_date":"01/01/2020"},
-     {"product_flavor":"Cherry", "flavor_version":"v2.0", "product":"Coca-Cola", "vendor":"CC Corp", "release_date":"05/20/2022"},
-     {"product_flavor":"Lime", "flavor_version":"v1.0","product":"Coca-Cola", "vendor":"CC Corp", "release_date":"02/01/2020"},
-     {"product_flavor":"Lime", "flavor_version":"v2.0", "product":"Coca-Cola", "vendor":"CC Corp", "release_date":"10/11/2021"},
-     {"product_flavor":"Raspberry", "flavor_version":"v1.0","product":"Coca-Cola", "vendor":"CC Corp", "release_date":"12/12/2023"}
+     {"product_flavor":"Cherry", "flavor_version":"v1.0",  "product":"Coca-Cola", "vendor":"CC Corp"},
+     {"product_flavor":"Cherry", "flavor_version":"v2.0", "product":"Coca-Cola", "vendor":"CC Corp"},
+     {"product_flavor":"Lime", "flavor_version":"v1.0","product":"Coca-Cola", "vendor":"CC Corp"},
+     {"product_flavor":"Lime", "flavor_version":"v2.0", "product":"Coca-Cola", "vendor":"CC Corp"},
+     {"product_flavor":"Raspberry", "flavor_version":"v1.0","product":"Coca-Cola", "vendor":"CC Corp"}
      ]
 
 data = pd.DataFrame(raw_data)
@@ -308,9 +308,9 @@ config = {
 
 *The `from` and `to` keys are how you align your node config to a relationship config. Just use the `node_group_name` you defined in your schema.*<br>
 
-*The `row_level_node_keys` are row level attributes outside of nodes attributes that you want to capture on a relationship. This can be an empty array if you just want to align a basic relationship.*
+*The `row_level_node_keys` are a key between node mappings that you want to capture on a relationship. This can be an empty array if you just want to align a basic relationship.*
 
-###### *For example: If you added `release_date` to row_attributes in this example, then you would get an array containing each distinct value of `release_date` for a "manufacturer"/"soda" node grouping.*
+###### *For example: If you added `flavor_version` to row_attributes in this example, then you would get a new relationship for each distinct value of `flavor_version` for a "manufacturer"-to-"soda" node mapping.*
 
 <br>
 
