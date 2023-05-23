@@ -11,7 +11,7 @@ dfx = dfxc(df)
 config = {
     'nodes': 
           [
-              {'node_group_name': 'a1', 'label': 'Place', 'row_level_node_keys': ['State'], 
+              {'node_group_name': 'state-level-nodes', 'label': 'Place', 'row_level_node_keys': ['State'], 
                'one_to_many': [], 
                'derived': [
                    {'attribute_name': 'employees_vaccinated', 'operation': 'SUM', 'columns': ['Emp_Number_Vaccinated']},
@@ -19,7 +19,7 @@ config = {
                    {'attribute_name': 'unique_counties', 'operation': 'DISTINCT', 'columns': ['County']}
                    ]
                },
-              {'node_group_name': 'a2', 'label': 'Place', 'row_level_node_keys': ['County'], 
+              {'node_group_name': 'county-level-nodes', 'label': 'Place', 'row_level_node_keys': ['County'], 
                'one_to_many': [], 
                'derived': [
                    {'attribute_name': 'employees_vaccinated', 'operation': 'SUM', 'columns': ['Emp_Number_Vaccinated']},
@@ -29,12 +29,13 @@ config = {
           ], 
      'relationships': 
               [
-                  {'rel_group_name': 'rel_type_1',  'name': 'HAS_SUBREGION',  'row_attributes': ['Mask Required'], 
-                  'label': 'geographic', 'from': 'a1', 'to': 'a2', 
-                   'derived': [
-                       {'attribute_name': 'hospital_count', 'operation': 'SUM', 'columns': ['Number of Hospitals']}
-                       ]
-                   }
+                  {
+                      'rel_group_name': 'rel_type_1',  'name': 'HAS_SUBREGION',  'row_attributes': ['Mask Required'], 
+                    'label': 'geographic', 'from': 'state-level-nodes', 'to': 'county-level-nodes', 
+                    'derived': [
+                        {'attribute_name': 'hospital_count', 'operation': 'SUM', 'columns': ['Number of Hospitals']}
+                        ]
+                    }
                       ]
       }
 
@@ -47,19 +48,19 @@ dfx.query_generator("cypher")
 # #6) Connect to database
 # dfx.connect("Neo4j", { "host":"localhost", "port":7687, "database":"neo4j", "username":"neo4j", "password":"password" } )
 
-#7) Query/Create your data
-for query in dfx.queries['nodes']:
-    # dfx.dbconn.query(query,False)
-    print(query)
-for query in dfx.queries['relationships']:
-    print(query)
-    # dfx.dbconn.query(query,False)
+# #7) Query/Create your data
+# for query in dfx.queries['nodes']:
+#     # dfx.dbconn.query(query,False)
+#     print(query)
+# for query in dfx.queries['relationships']:
+#     print(query)
+#     # dfx.dbconn.query(query,False)
 
 # #8) Validate Data
 # new_data = dfx.dbconn.query("match (n)-[p]-(m) return n,p,m limit 10")
 # print(new_data)
 
-# print(dfx.queries)
+
 
 
 
